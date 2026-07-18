@@ -221,7 +221,7 @@ button:disabled { opacity: 0.4; cursor: default; }
     </div>
     <div id="liquidate-panel" style="display:none;background:#fff3e0;border:2px solid #e65100;border-radius:10px;padding:12px 14px;margin-bottom:1rem">
       <div style="font-size:11px;font-weight:600;color:#e65100;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🏦 Liquidate to the Bank</div>
-      <div style="font-size:12px;color:#666;margin-bottom:10px;line-height:1.5">The bank buys any deal instantly — but only pays <strong>50% of the sell price</strong>. A bad trade, but it beats drowning in interest. Referral cuts still get paid out of your proceeds.</div>
+      <div style="font-size:12px;color:#666;margin-bottom:10px;line-height:1.5">The bank buys any deal instantly — but only pays <strong>40% of the sell price</strong>. A bad trade, but it beats drowning in interest. Referral cuts still get paid out of your proceeds.</div>
       <div id="liquidate-items" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
       <button id="liquidate-cancel-btn" style="width:100%;color:#888;font-size:12px;border-color:#ccc">Cancel</button>
     </div>
@@ -666,18 +666,18 @@ const SPACES=[
 ];
 
 const DEAL_CARDS=[
-  {name:'Rare Stamp Collection', buy:1000, sell:2000},
-  {name:'Antique Furniture',     buy:1500, sell:3000},
-  {name:'Classic Car',           buy:2000, sell:4000},
-  {name:'Coin Collection',       buy:2500, sell:5000},
-  {name:'Small Sailboat',        buy:3000, sell:6000},
-  {name:'Vintage Motorcycle',    buy:3500, sell:7000},
-  {name:'Antique Roadster',      buy:4000, sell:8000},
-  {name:'Ski Chalet Timeshare',  buy:4500, sell:9000},
-  {name:'Rental Duplex',         buy:5000, sell:10000},
-  {name:'Laundromat',            buy:6000, sell:12000},
-  {name:'Mini-Mart Franchise',   buy:7000, sell:14000},
-  {name:'Apartment House',       buy:9000, sell:18000},
+  {name:'Rare Stamp Collection', buy:1000, sell:1700},
+  {name:'Antique Furniture',     buy:1500, sell:2550},
+  {name:'Classic Car',           buy:2000, sell:3400},
+  {name:'Coin Collection',       buy:2500, sell:4250},
+  {name:'Small Sailboat',        buy:3000, sell:5100},
+  {name:'Vintage Motorcycle',    buy:3500, sell:5950},
+  {name:'Antique Roadster',      buy:4000, sell:6800},
+  {name:'Ski Chalet Timeshare',  buy:4500, sell:7650},
+  {name:'Rental Duplex',         buy:5000, sell:8500},
+  {name:'Laundromat',            buy:6000, sell:10200},
+  {name:'Mini-Mart Franchise',   buy:7000, sell:11900},
+  {name:'Apartment House',       buy:9000, sell:15300},
 ];
 const MAIL_CARDS=[
   {text:'ER copay bill — pay $550',amount:-550},
@@ -1043,7 +1043,7 @@ function landOn(pos){
         setEvent('🤝 Found a Buyer!','You have no deals and neither does anyone else. Turn wasted!');
         updateInfo(); nextTurn(); return;
       }
-      setEvent('🤝 Broker Opportunity!',p.name+' can broker a sale for other players and earn a 20% finders fee!');
+      setEvent('🤝 Broker Opportunity!',p.name+' can broker a sale for other players and earn a 15% finders fee!');
       document.getElementById('roll-btn').disabled=true;
       showBrokerOffer(p,potentialSellers); return;
     }
@@ -1238,9 +1238,9 @@ function aiHousekeeping(p){
   // Liquidate if drowning: 20% tier and holding deals
   if(p.loanPrincipal>5000 && p.deals.length>0){
     let best=null,bestVal=0;
-    p.deals.forEach(d=>{ const bp=Math.round(d.sell*0.50/50)*50-(d.referralCut||0); if(bp>bestVal){best=d;bestVal=bp;} });
+    p.deals.forEach(d=>{ const bp=Math.round(d.sell*0.40/50)*50-(d.referralCut||0); if(bp>bestVal){best=d;bestVal=bp;} });
     if(best){
-      const bp=Math.round(best.sell*0.50/50)*50;
+      const bp=Math.round(best.sell*0.40/50)*50;
       const pos=p.deals.findIndex(x=>x.name===best.name&&x.buy===best.buy);
       if(pos!==-1) p.deals.splice(pos,1);
       p.cash+=bp-(best.referralCut||0);
@@ -1431,7 +1431,7 @@ function showBrokerOffer(broker,queue){
       if(seller.loans>0 && seller.deals.length>0){
         let best=null,bestNet=-Infinity,bestFee=0,bestReceive=0;
         seller.deals.forEach(d=>{
-          const fee=Math.round(d.sell*0.20/50)*50;
+          const fee=Math.round(d.sell*0.15/50)*50;
           const rc=d.referralCut||0; const sr=d.sell-fee-rc; const sn=sr-d.buy;
           if(sn>bestNet){best=d;bestNet=sn;bestFee=fee;bestReceive=sr;}
         });
@@ -1457,10 +1457,10 @@ function showBrokerOffer(broker,queue){
   }
   document.getElementById('broker-offer-title').textContent=seller.name+' — sell through '+broker.name+'?';
   document.getElementById('broker-offer-details').innerHTML=
-    broker.name+' has a buyer and earns a <strong>20% finders fee</strong> on whatever you sell.';
+    broker.name+' has a buyer and earns a <strong>15% finders fee</strong> on whatever you sell.';
   const itemsEl=document.getElementById('broker-deal-items'); itemsEl.innerHTML='';
   seller.deals.forEach(deal=>{
-    const fee=Math.round(deal.sell*0.20/50)*50;
+    const fee=Math.round(deal.sell*0.15/50)*50;
     const rc=deal.referralCut||0; const sr=deal.sell-fee-rc; const sn=sr-deal.buy;
     const btn=document.createElement('button');
     btn.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border:1.5px solid #0277bd;border-radius:8px;background:white;cursor:pointer;font-size:12px;width:100%;text-align:left;gap:8px';
@@ -1514,7 +1514,7 @@ function showDealOffer(p,card){
         const others=[];
         for(let i=1;i<G.players.length;i++) others.push(G.players[(G.cur+i)%G.players.length]);
         if(others.length===0){ setEvent('🤖 Declined',p.name+' passed on the '+card.name+'.'); updateInfo(); nextTurn(); return; }
-        const referralCut=Math.round(card.sell*0.15/50)*50;
+        const referralCut=Math.round(card.sell*0.10/50)*50;
         setEvent('🤖 Declined',p.name+' passed on the '+card.name+' — offering it around.');
         showSecondaryMarket({...card},G.cur,referralCut,others);
       }
@@ -1558,7 +1558,7 @@ function showDealOffer(p,card){
     const others=[];
     for(let i=1;i<G.players.length;i++) others.push(G.players[(G.cur+i)%G.players.length]);
     if(others.length===0){ addLog(p.name+' declined '+card.name,''); setEvent('📋 Declined','No other players. Card gone.'); updateInfo(); nextTurn(); return; }
-    const referralCut=Math.round(card.sell*0.15/50)*50;
+    const referralCut=Math.round(card.sell*0.10/50)*50;
     addLog(p.name+' declined '+card.name+' — offering to others','');
     showSecondaryMarket({...card},G.cur,referralCut,others);
   });
@@ -2019,7 +2019,7 @@ function showLiquidatePanel(){
   const itemsEl=document.getElementById('liquidate-items');
   itemsEl.innerHTML='';
   p.deals.forEach(deal=>{
-    const bankPrice=Math.round(deal.sell*0.50/50)*50;
+    const bankPrice=Math.round(deal.sell*0.40/50)*50;
     const rc=deal.referralCut||0;
     const youGet=bankPrice-rc;
     const net=youGet-deal.buy;
