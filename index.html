@@ -892,7 +892,8 @@ function movePlayer(roll){
   }
 
   let step = oldPos;
-  let stepsLeft = roll;
+  // Walk only as far as space 31 when crossing Payday — overshoot is discarded
+  let stepsLeft = passedPayday ? (31 - oldPos) : roll;
 
   function doStep(){
     if(stepsLeft === 0){
